@@ -138,64 +138,11 @@ for window in range(nwindows):
 ```python
 left_fit = np.polyfit(lefty, leftx, 2)
 right_fit = np.polyfit(righty, rightx, 2)
+```
 
-# Generate x and y values for plotting
-ploty = np.linspace(0, binary_warped.shape[0] - 1, binary_warped.shape[0])
-# print(ploty)
-print('left fit: ', left_fit)
-print('right fit: ', right_fit)
-left_fitx = left_fit[0] * ploty ** 2 + left_fit[1] * ploty + left_fit[2]
-right_fitx = right_fit[0] * ploty ** 2 + right_fit[1] * ploty + right_fit[2]
+## Generate a polygon to illustrate the search window area, and calculate the M inverse to unwarp it into the 3D view
 
-out_img[nonzeroy[left_lane_inds], nonzerox[left_lane_inds]] = [255, 0, 0]
-out_img[nonzeroy[right_lane_inds], nonzerox[right_lane_inds]] = [0, 0, 255]
-plt.imshow(out_img)
-plt.plot(left_fitx, ploty, color='yellow')
-plt.plot(right_fitx, ploty, color='yellow')
-plt.xlim(0, 1280)
-plt.ylim(720, 0)
-plt.show()
-
-# ----------------------------------------------------
-# Assume you now have a new warped binary image
-# from the next frame of video (also called "binary_warped")
-# It's now much easier to find line pixels!
-nonzero = binary_warped.nonzero()
-nonzeroy = np.array(nonzero[0])
-nonzerox = np.array(nonzero[1])
-margin = 100
-left_lane_inds = ((nonzerox > (left_fit[0] * (nonzeroy ** 2) + left_fit[1] * nonzeroy +
-                               left_fit[2] - margin)) & (nonzerox < (left_fit[0] * (nonzeroy ** 2) +
-                                                                     left_fit[1] * nonzeroy + left_fit[2] + margin)))
-
-right_lane_inds = ((nonzerox > (right_fit[0] * (nonzeroy ** 2) + right_fit[1] * nonzeroy +
-                                right_fit[2] - margin)) & (nonzerox < (right_fit[0] * (nonzeroy ** 2) +
-                                                                       right_fit[1] * nonzeroy + right_fit[
-                                                                           2] + margin)))
-
-# Again, extract left and right line pixel positions
-leftx = nonzerox[left_lane_inds]
-lefty = nonzeroy[left_lane_inds]
-rightx = nonzerox[right_lane_inds]
-righty = nonzeroy[right_lane_inds]
-# Fit a second order polynomial to each
-left_fit = np.polyfit(lefty, leftx, 2)
-right_fit = np.polyfit(righty, rightx, 2)
-# Generate x and y values for plotting
-ploty = np.linspace(0, binary_warped.shape[0] - 1, binary_warped.shape[0])
-left_fitx = left_fit[0] * ploty ** 2 + left_fit[1] * ploty + left_fit[2]
-right_fitx = right_fit[0] * ploty ** 2 + right_fit[1] * ploty + right_fit[2]
-
-# Create an image to draw on and an image to show the selection window
-out_img = np.dstack((binary_warped, binary_warped, binary_warped)) * 255
-out_img[::] = [0, 0, 0]
-window_img = np.zeros_like(out_img)
-# window_img = np.zeros((720, 1280, 3))
-# Color in left and right line pixels
-out_img[nonzeroy[left_lane_inds], nonzerox[left_lane_inds]] = [255, 0, 0]
-out_img[nonzeroy[right_lane_inds], nonzerox[right_lane_inds]] = [0, 0, 255]
-
-# Generate a polygon to illustrate the search window area
+```python
 # And recast the x and y points into usable format for cv2.fillPoly()
 left_line_window1 = np.array([np.transpose(np.vstack([left_fitx - margin, ploty]))])
 left_line_window2 = np.array([np.flipud(np.transpose(np.vstack([left_fitx + margin,
@@ -211,43 +158,20 @@ window_left_line = np.array([np.transpose(np.vstack([left_fitx, ploty]))])
 window_right_line = np.array([np.flipud(np.transpose(np.vstack([right_fitx, ploty])))])
 window_line_pts = np.hstack((window_left_line, window_right_line))
 
-# Draw the lane onto the warped blank image
-# cv2.fillPoly(window_img, np.int_([left_line_pts]), (0, 255, 0))
-# cv2.fillPoly(window_img, np.int_([right_line_pts]), (0, 255, 0))
 cv2.fillPoly(window_img, np.int_([window_line_pts]), (0, 255, 0))
-
 result = cv2.addWeighted(out_img, 0.8, window_img, 0.2, 0)
 
 Minv = cv2.getPerspectiveTransform(dst, src)
 window_inv = cv2.warpPerspective(result, Minv, (img.shape[1], img.shape[0]), flags=cv2.INTER_LINEAR)
-
 output = cv2.addWeighted(window_inv, 1, img, 0.6, 0)
-
-plt.figure(figsize=(15, 15))
-plt.imshow(output)
-
-# plt.plot(left_fitx, ploty, color='yellow')
-# plt.plot(right_fitx, ploty, color='yellow')
-plt.xlim(0, 1280)
-plt.ylim(720, 0)
-plt.show()
-
+...
 ```
 
 
-![png](output_9_0.png)
-
-
-    left points numbers: 2999
-    right points numbers: 3040
-    Lane weight: R
-    left fit:  [ 1.64772996e-04 -3.34800747e-01  4.53030519e+02]
-    right fit:  [ 2.42217263e-04 -3.26629624e-01  1.07489908e+03]
-    
+![png](output_9_0.png)    
 
 
 ![png](output_9_2.png)
-
 
 
 ![png](output_9_3.png)
