@@ -37,30 +37,17 @@ dst = cv2.undistort(img, mtx, dist, None, mtx)
 
 
 ## Use color transforms, gradients, etc., to create a thresholded binary image
-
+* use s_channel for saturation 
+* use Sobel to caculate the sobelx
+* use v_channel to get the value of the pixel
 
 ```python
-
-# read the test image, and undistort it 
-img = cv2.imread('./test_images/test4.png')
-img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
-image = cal_undistort(img, objpoints, imgpoints)
-
-# Edit this function to create your own pipeline.
-def pipeline(img):
-
     hls = cv2.cvtColor(img, cv2.COLOR_RGB2HLS)
     s_channel = hls[:,:,2]
-    h_channel = hls[:,:,0]
     
     hsv = cv2.cvtColor(img, cv2.COLOR_RGB2HSV)
     v_channel = hsv[:,:,2]
-    
-
-    # Grayscale image
-    # NOTE: we already saw that standard grayscaling lost color information for the lane lines
-    # Explore gradients in other colors spaces / color channels to see what might work better
-    gray = cv2.cvtColor(img, cv2.COLOR_RGB2GRAY)
+    ...
 
     # Sobel x
     sobelx = cv2.Sobel(gray, cv2.CV_64F, 1, 0) # Take the derivative in x
@@ -79,41 +66,15 @@ def pipeline(img):
     s_binary = np.zeros_like(s_channel)
     s_binary[(s_channel >= s_thresh_min) & (s_channel <= s_thresh_max)] = 1
     
-    # Threshold yellow
-    yellow_thresh_min = 15
-    yellow_thresh_max = 25
-    yellow_binary = np.zeros_like(h_channel)
-    yellow_binary[(h_channel >= yellow_thresh_min) & (h_channel <= yellow_thresh_max)] = 1
-
     # Threshold white
     white_thresh_min = 150
     white_binary = np.zeros_like(v_channel)
     white_binary[(v_channel >= white_thresh_min)] = 1
     
-    # Stack each channel to view their individual contributions in green and blue respectively
-    # This returns a stack of the two binary images, whose components you can see as different colors
-#     color_binary = np.dstack(( np.zeros_like(sxbinary), sxbinary, s_binary)) * 255
-
-    # Combine the two binary thresholds
     combined_binary = np.zeros_like(sxbinary)
-#     combined_binary[(s_binary == 1) | ((sxbinary == 1) & (yellow_binary == 1))] = 1
-#     combined_binary[(s_binary == 1) & ((yellow_binary == 1) | (white_binary ==1))] = 1
     combined_binary[((s_binary == 1) & (white_binary == 1) | (sxbinary == 1))] = 1
     return combined_binary
-    
-result = pipeline(image)
-# print(result.shape)
 
-# Plot the result
-f, (ax1, ax2) = plt.subplots(1, 2, figsize=(15, 15))
-f.tight_layout()
-
-ax1.imshow(image)
-ax1.set_title('Undistorted Image', fontsize=20)
-
-ax2.imshow(result, cmap='gray')
-ax2.set_title('Binary image result', fontsize=20)
-plt.subplots_adjust(left=0., right=1, top=0.9, bottom=0.)
 ```
 
 
