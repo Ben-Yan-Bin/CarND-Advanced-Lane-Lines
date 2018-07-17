@@ -224,9 +224,10 @@ output = cv2.putText(output, position_text, (100, 100), font, 1.2, (255, 255, 25
 
 ![png](output_14_1.png)
 
-## Viedo
+## Video
 Here is the link of the video: https://github.com/Ben-Yan-Bin/CarND-Advanced-Lane-Lines/blob/master/output_images/test.mp4
 
 ## Discussion
-* jjj
-* iii
+* For some video frames, there are some color/texture change of the road, which will add effects of Sobel:
+What I did is to enhance the effect of saturation (lower the threshold min to 120 to get more pixels), then the program will weight more on the saturation (which are usually real road lane lines)
+* After enhancement on saturation, the program runs well until to the end of video, there are large blocks of shade, and the saturation will generate large blocks in the binary image, which impact the lane lines a lot. I added value channel from HSV, and consider saturation and value channel together to get rid of the shade block from the binary image
