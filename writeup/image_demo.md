@@ -177,146 +177,50 @@ output = cv2.addWeighted(window_inv, 1, img, 0.6, 0)
 ![png](output_9_3.png)
 
 
+## Generate some points to represent lane-line pixels and calculate the curvature
 
 ```python
-
-# Generate some fake data to represent lane-line pixels
-ploty = np.linspace(0, 719, num=720)# to cover same y-range as image
-
-# y_eval = np.max(ploty)
-# left_curverad_1 = ((1 + (2*left_fit[0]*y_eval + left_fit[1])**2)**1.5) / np.absolute(2*left_fit[0])
-# right_curverad_1 = ((1 + (2*right_fit[0]*y_eval + right_fit[1])**2)**1.5) / np.absolute(2*right_fit[0])
-# print(left_curverad_1, right_curverad_1)
-
-# quadratic_coeff = 3e-4 # arbitrary quadratic coefficient
-# For each y position generate random x position within +/-50 pix
-# of the line base position in each case (x=200 for left, and x=900 for right)
-# leftx = np.array([200 + (y**2)*quadratic_coeff + np.random.randint(-50, high=51) 
-#                               for y in ploty])
-# rightx = np.array([900 + (y**2)*quadratic_coeff + np.random.randint(-50, high=51) 
-#                                 for y in ploty])
-
 leftx = np.array([left_fit[2] + (y**2)*left_fit[0] + left_fit[1]*y + np.random.randint(-50, high=51) 
                               for y in ploty])
 rightx = np.array([right_fit[2] + (y**2)*right_fit[0] + right_fit[1]*y + np.random.randint(-50, high=51) 
                                 for y in ploty])
-
-
-# leftx = leftx[::-1]  # Reverse to match top-to-bottom in y
-# rightx = rightx[::-1]  # Reverse to match top-to-bottom in y
-
-
-# Fit a second order polynomial to pixel positions in each fake lane line
+...
 left_fit = np.polyfit(ploty, leftx, 2)
 left_fitx = left_fit[0]*ploty**2 + left_fit[1]*ploty + left_fit[2]
 right_fit = np.polyfit(ploty, rightx, 2)
 right_fitx = right_fit[0]*ploty**2 + right_fit[1]*ploty + right_fit[2]
 
-# Plot up the fake data
-mark_size = 3
-plt.plot(leftx, ploty, 'o', color='red', markersize=mark_size)
-plt.plot(rightx, ploty, 'o', color='blue', markersize=mark_size)
-plt.xlim(0, 1280)
-plt.ylim(0, 720)
-plt.plot(left_fitx, ploty, color='green', linewidth=3)
-plt.plot(right_fitx, ploty, color='green', linewidth=3)
-plt.gca().invert_yaxis() # to visualize as we do the images
 ```
 
 
 ![png](output_10_0.png)
 
 
-
 ```python
-# Define y-value where we want radius of curvature
-# I'll choose the maximum y-value, corresponding to the bottom of the image
-y_eval = np.max(ploty)
 left_curverad = ((1 + (2*left_fit[0]*y_eval + left_fit[1])**2)**1.5) / np.absolute(2*left_fit[0])
 right_curverad = ((1 + (2*right_fit[0]*y_eval + right_fit[1])**2)**1.5) / np.absolute(2*right_fit[0])
-print(left_curverad, right_curverad)
-# Example values: 1926.74 1908.48
 ```
-
-    2976.392781951944 2401.4000193062734
     
-
+## Add the curvature and car position text in the output image
 
 ```python
-# Define conversions in x and y from pixels space to meters
-ym_per_pix = 30/720 # meters per pixel in y dimension
-xm_per_pix = 3.7/700 # meters per pixel in x dimension
-
-# Fit new polynomials to x,y in world space
-left_fit_cr = np.polyfit(ploty*ym_per_pix, leftx*xm_per_pix, 2)
-right_fit_cr = np.polyfit(ploty*ym_per_pix, rightx*xm_per_pix, 2)
-# Calculate the new radii of curvature
-left_curverad = ((1 + (2*left_fit_cr[0]*y_eval*ym_per_pix + left_fit_cr[1])**2)**1.5) / np.absolute(2*left_fit_cr[0])
-right_curverad = ((1 + (2*right_fit_cr[0]*y_eval*ym_per_pix + right_fit_cr[1])**2)**1.5) / np.absolute(2*right_fit_cr[0])
-# Now our radius of curvature is in meters
-print(left_curverad, 'm', right_curverad, 'm')
-# Example values: 632.1 m    626.2 m
-
-curvature_weight = left_curverad
-if lane_weight == "L":
-    print("left weight")
-else:
-    print("right weight")
-    curvature_weight = right_curverad
-    
-curvature_text = "Radius of curvature = %.1f" % curvature_weight + "m"
-```
-
-    964.5424301352997 m 788.7481243827358 m
-    right weight
-    
-
-
-```python
-# need to calculate 
 maxy = 719
 lx=left_fit[0]*maxy**2 + left_fit[1]*maxy + left_fit[2]
 rx=right_fit[0]*maxy**2 + right_fit[1]*maxy + right_fit[2]
 road_center = (lx + rx) / 2
-
 car_center = 1280 / 2
 gap = (road_center - car_center) * xm_per_pix
 gap = abs(gap)
-print(lx)
-print(rx)
-print("road center", road_center)
 pos = ''
 if gap > 0:
     pos = 'left of'
 elif gap < 0:
     pos = 'right of'
-
 position_text = "The vehicle is %.2f" %gap + " m " + pos + " center."
-print(position_text)
-```
-
-    298.6117166401193
-    964.4425079524747
-    road center 631.527112296297
-    The vehicle is 0.04 m left of center.
-    
-
-
-```python
 font = cv2.FONT_ITALIC
 output = cv2.putText(output, curvature_text, (100, 50), font, 1.2, (255, 255, 255), 2)
 output = cv2.putText(output, position_text, (100, 100), font, 1.2, (255, 255, 255), 2)
-plt.figure(figsize=(15, 15))
-plt.imshow(output)
 ```
-
-
-
-
-    <matplotlib.image.AxesImage at 0xc7adf98>
-
-
-
 
 ![png](output_14_1.png)
 
