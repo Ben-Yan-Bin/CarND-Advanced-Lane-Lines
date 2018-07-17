@@ -81,7 +81,7 @@ dst = cv2.undistort(img, mtx, dist, None, mtx)
 ![png](output_5_0.png)
 
 
-## Prepare src and dst points, calculate M, and apply a perspective transform to rectify binary image ("birds-eye view")
+## Prepare src and dst points, calculate M, and apply a perspective transform to rectify test color image ("birds-eye view")
 
 
 ```python
@@ -101,56 +101,27 @@ warped = cv2.warpPerspective(road_img, M, (img.shape[1], img.shape[0]), flags=cv
 ```
 ![png](output_7_1.png)
 
-
+## Apply a perspective transform to the binary image from previous step ("birds-eye view"), we can see the road lanes are transformed from 3D angle to bird view
 
 ```python
-
-# img = cv2.imread('./test_images/straight_lines1.jpg')
-img = cv2.imread('./test_images/test4.png')
-img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
-image = cal_undistort(img, objpoints, imgpoints)
-result = pipeline(image)
 warped = cv2.warpPerspective(result, M, (img.shape[1], img.shape[0]), flags=cv2.INTER_LINEAR)
-
-# Plot the result
-f, (ax1, ax2) = plt.subplots(1, 2, figsize=(15, 15))
-f.tight_layout()
-
-ax1.imshow(image, cmap='gray')
-# ax1.imshow(image, cmap='gray')
-ax1.set_title('Undistorted Image', fontsize=20)
-
-ax2.imshow(warped, cmap='gray')
-ax2.set_title('Binary image result', fontsize=20)
-plt.subplots_adjust(left=0., right=1, top=0.9, bottom=0.)
 ```
-
 
 ![png](output_8_0.png)
 
-
+## After the binary image is warped, I summed up the pixels and use argmax to get initial lane positions
 
 ```python
 
-
-# Read in a thresholded image
-binary_warped = warped
-
 histogram = np.sum(binary_warped[binary_warped.shape[0] // 2:, :], axis=0)
-plt.plot(histogram)
-plt.show()
-
-# Assuming you have created a warped binary image called "binary_warped"
-# Take a histogram of the bottom half of the image
-histogram = np.sum(binary_warped[binary_warped.shape[0] // 2:, :], axis=0)
-# Create an output image to draw on and  visualize the result
-out_img = np.dstack((binary_warped, binary_warped, binary_warped)) * 255
-# Find the peak of the left and right halves of the histogram
-# These will be the starting point for the left and right lines
-one_third = np.int(histogram.shape[0] // 3)
+...
 leftx_base = np.argmax(histogram[:one_third])
 rightx_base = np.argmax(histogram[2*one_third:]) + 2*one_third
+```
 
+## 
+
+```python
 # Choose the number of sliding windows
 nwindows = 9
 # Set height of windows
