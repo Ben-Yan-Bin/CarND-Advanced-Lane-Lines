@@ -81,19 +81,10 @@ dst = cv2.undistort(img, mtx, dist, None, mtx)
 ![png](output_5_0.png)
 
 
-## Apply a perspective transform to rectify binary image ("birds-eye view")
+## Prepare src and dst points, calculate M, and apply a perspective transform to rectify binary image ("birds-eye view")
 
 
 ```python
-
-# img = cv2.imread('./test_images/straight_lines1.jpg')
-img = cv2.imread('./test_images/test2.png')
-img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
-image = cal_undistort(img, objpoints, imgpoints)
-
-img_size = image.shape
-print(img_size)
-
 src = np.float32(
     [[(img_size[1] / 2) - 60, img_size[0] / 2 + 100],
     [((img_size[1] / 6) + 5), img_size[0]],
@@ -104,45 +95,10 @@ dst = np.float32(
     [(img_size[1] / 4), img_size[0]],
     [(img_size[1] * 3 / 4), img_size[0]],
     [(img_size[1] * 3 / 4), 0]])
-
-# print(src)
-# print(dst)
-src_int = np.int32(src)
-dst_int = np.int32(dst)
-src_int = src_int.reshape((-1, 4, 2))
-dst_int = dst_int.reshape((-1, 4, 2))
-# print(src_int.shape)
-# print(dst_int)
-road_img = np.copy(image)
-
-# cv2.rectangle(road_img, (int(img_size[1]/2-440), 450), (int(img_size[1]/2+440), 720), (0, 0, 255), 5)
-# cv2.rectangle(road_img, (int(img_size[1]/2-50), 450), (int(img_size[1]/2+50), 720), (0, 255, 0), 5)
-# plt.imshow(road_img)
-
-
-
+...
 M = cv2.getPerspectiveTransform(src, dst)
-
 warped = cv2.warpPerspective(road_img, M, (img.shape[1], img.shape[0]), flags=cv2.INTER_LINEAR)
-warped_line = np.copy(warped)
-
-cv2.polylines(road_img, src_int, True, (255, 0, 0), 2)
-cv2.polylines(warped_line, dst_int, True, (255, 0, 0), 2)
-
-f, (ax1, ax2) = plt.subplots(1, 2, figsize=(15, 15))
-f.tight_layout()
-ax1.imshow(road_img)
-ax1.set_title('Original Image', fontsize=20)
-ax2.imshow(warped_line)
-ax2.set_title('Warped Image', fontsize=20)
-plt.subplots_adjust(left=0., right=1, top=0.9, bottom=0.)
-
 ```
-
-    (738, 1280, 3)
-    
-
-
 ![png](output_7_1.png)
 
 
