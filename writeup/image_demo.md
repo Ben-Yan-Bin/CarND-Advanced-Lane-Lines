@@ -224,3 +224,9 @@ output = cv2.putText(output, position_text, (100, 100), font, 1.2, (255, 255, 25
 
 ![png](output_14_1.png)
 
+## Viedo
+Here is the link of the video: https://github.com/Ben-Yan-Bin/CarND-Advanced-Lane-Lines/blob/master/output_images/test.mp4
+
+## Discussion
+* jjj
+* iii
