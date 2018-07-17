@@ -228,6 +228,28 @@ output = cv2.putText(output, position_text, (100, 100), font, 1.2, (255, 255, 25
 Here is the link of the video: https://github.com/Ben-Yan-Bin/CarND-Advanced-Lane-Lines/blob/master/output_images/test.mp4
 
 ## Discussion
-* For some video frames, there are some color/texture change of the road, which will add effects of Sobel:
+* For some video frames, there are some color/texture change of the road, which will add effects of Sobel:    
 What I did is to enhance the effect of saturation (lower the threshold min to 120 to get more pixels), then the program will weight more on the saturation (which are usually real road lane lines)
-* After enhancement on saturation, the program runs well until to the end of video, there are large blocks of shade, and the saturation will generate large blocks in the binary image, which impact the lane lines a lot. I added value channel from HSV, and consider saturation and value channel together to get rid of the shade block from the binary image
+* After enhancement on saturation, the program runs well until to the end of video, there are large blocks of shade, and the saturation will generate large blocks in the binary image, which impact the lane lines a lot.    
+I added value channel from HSV, and consider saturation and value channel together to get rid of the shade block from the binary image
+```python
+    # Threshold x gradient
+    thresh_min = 50
+    thresh_max = 100
+    sxbinary = np.zeros_like(scaled_sobel)
+    sxbinary[(scaled_sobel >= thresh_min) & (scaled_sobel <= thresh_max)] = 1
+
+    # Threshold color channel
+    s_thresh_min = 120
+    s_thresh_max = 255
+    s_binary = np.zeros_like(s_channel)
+    s_binary[(s_channel >= s_thresh_min) & (s_channel <= s_thresh_max)] = 1
+    
+    # Threshold white
+    white_thresh_min = 150
+    white_binary = np.zeros_like(v_channel)
+    white_binary[(v_channel >= white_thresh_min)] = 1
+    
+    combined_binary = np.zeros_like(sxbinary)
+    combined_binary[((s_binary == 1) & (white_binary == 1) | (sxbinary == 1))] = 1
+```
