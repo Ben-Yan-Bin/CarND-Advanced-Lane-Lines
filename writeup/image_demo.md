@@ -24,34 +24,12 @@ imgpoints = [] # 2d points in image plane.
 ret, corners = cv2.findChessboardCorners(gray, (9,6),None)
 ```
 
-## Compute the matrix and distortion coefficients, and apply undistortion to raw images
-
+## Compute the matrix and distortion coefficients, and apply undistortion to a test images to check the effects
 
 ```python
-# Read in an image
-img = cv2.imread('./camera_cal/calibration2.jpg')
-img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
-
-# TODO: Write a function that takes an image, object points, and image points
-# performs the camera calibration, image distortion correction and 
-# returns the undistorted image
-def cal_undistort(img, objpoints, imgpoints):
-    # Use cv2.calibrateCamera() and cv2.undistort()
-    # undist = np.copy(img)  # Delete this line
-    img_size = (img.shape[1], img.shape[0])
-    ret, mtx, dist, rvecs, tvecs = cv2.calibrateCamera(objpoints, imgpoints, img_size, None, None)
-    dst = cv2.undistort(img, mtx, dist, None, mtx)
-    return dst
-
-undistorted = cal_undistort(img, objpoints, imgpoints)
-
-f, (ax1, ax2) = plt.subplots(1, 2, figsize=(15, 10))
-f.tight_layout()
-ax1.imshow(img)
-ax1.set_title('Original Image', fontsize=20)
-ax2.imshow(undistorted)
-ax2.set_title('Undistorted Image', fontsize=20)
-plt.subplots_adjust(left=0., right=1, top=0.9, bottom=0.)
+ret, mtx, dist, rvecs, tvecs = cv2.calibrateCamera(objpoints, imgpoints, img_size, None, None)
+dst = cv2.undistort(img, mtx, dist, None, mtx)
+...
 ```
 
 
