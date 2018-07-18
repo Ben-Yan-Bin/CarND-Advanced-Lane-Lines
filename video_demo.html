@@ -11960,7 +11960,7 @@ div#notebook {
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="c1"># preparation ---------------------------</span>
-<span class="c1"># objpoints, imgpoints = preparePoints()</span>
+<span class="n">objpoints</span><span class="p">,</span> <span class="n">imgpoints</span> <span class="o">=</span> <span class="n">preparePoints</span><span class="p">()</span>
 <span class="c1"># img = cv2.imread(&#39;./test_images/straight_lines2.jpg&#39;)</span>
 <span class="n">img</span> <span class="o">=</span> <span class="n">cv2</span><span class="o">.</span><span class="n">imread</span><span class="p">(</span><span class="s1">&#39;./test_images/test3.jpg&#39;</span><span class="p">)</span>
 <span class="n">img</span> <span class="o">=</span> <span class="n">cv2</span><span class="o">.</span><span class="n">cvtColor</span><span class="p">(</span><span class="n">img</span><span class="p">,</span> <span class="n">cv2</span><span class="o">.</span><span class="n">COLOR_BGR2RGB</span><span class="p">)</span>
@@ -11969,11 +11969,11 @@ div#notebook {
 
 <span class="k">def</span> <span class="nf">process_image</span><span class="p">(</span><span class="n">image</span><span class="p">):</span>
     <span class="c1"># process image ------------------------------</span>
-<span class="c1">#     undistorted = calUndistort(image, objpoints, imgpoints)</span>
-<span class="c1">#     binary_img = calBinary(undistorted)</span>
+    <span class="n">undistorted</span> <span class="o">=</span> <span class="n">calUndistort</span><span class="p">(</span><span class="n">image</span><span class="p">,</span> <span class="n">objpoints</span><span class="p">,</span> <span class="n">imgpoints</span><span class="p">)</span>
+    <span class="n">binary_img</span> <span class="o">=</span> <span class="n">calBinary</span><span class="p">(</span><span class="n">undistorted</span><span class="p">)</span>
     
     
-    <span class="n">binary_img</span> <span class="o">=</span> <span class="n">calBinary</span><span class="p">(</span><span class="n">image</span><span class="p">)</span>
+<span class="c1">#     binary_img = calBinary(image)</span>
     <span class="n">binary_warped</span> <span class="o">=</span> <span class="n">cv2</span><span class="o">.</span><span class="n">warpPerspective</span><span class="p">(</span><span class="n">binary_img</span><span class="p">,</span> <span class="n">M</span><span class="p">,</span> <span class="p">(</span><span class="n">img</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">img</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]),</span> <span class="n">flags</span><span class="o">=</span><span class="n">cv2</span><span class="o">.</span><span class="n">INTER_LINEAR</span><span class="p">)</span>
 
     
@@ -12096,7 +12096,7 @@ div#notebook {
     <span class="n">nonzero</span> <span class="o">=</span> <span class="n">binary_warped</span><span class="o">.</span><span class="n">nonzero</span><span class="p">()</span>
     <span class="n">nonzeroy</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">nonzero</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
     <span class="n">nonzerox</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">nonzero</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
-    <span class="n">margin</span> <span class="o">=</span> <span class="mi">100</span>
+    <span class="n">margin</span> <span class="o">=</span> <span class="mi">20</span>
     <span class="n">left_lane_inds</span> <span class="o">=</span> <span class="p">((</span><span class="n">nonzerox</span> <span class="o">&gt;</span> <span class="p">(</span><span class="n">left_fit</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">*</span> <span class="p">(</span><span class="n">nonzeroy</span> <span class="o">**</span> <span class="mi">2</span><span class="p">)</span> <span class="o">+</span> <span class="n">left_fit</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">*</span> <span class="n">nonzeroy</span> <span class="o">+</span>
                                    <span class="n">left_fit</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span> <span class="o">-</span> <span class="n">margin</span><span class="p">))</span> <span class="o">&amp;</span> <span class="p">(</span><span class="n">nonzerox</span> <span class="o">&lt;</span> <span class="p">(</span><span class="n">left_fit</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">*</span> <span class="p">(</span><span class="n">nonzeroy</span> <span class="o">**</span> <span class="mi">2</span><span class="p">)</span> <span class="o">+</span>
                                                                          <span class="n">left_fit</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">*</span> <span class="n">nonzeroy</span> <span class="o">+</span> <span class="n">left_fit</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span> <span class="o">+</span> <span class="n">margin</span><span class="p">)))</span>
@@ -12125,8 +12125,8 @@ div#notebook {
     <span class="n">window_img</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros_like</span><span class="p">(</span><span class="n">out_img</span><span class="p">)</span>
     <span class="c1"># window_img = np.zeros((720, 1280, 3))</span>
     <span class="c1"># Color in left and right line pixels</span>
-    <span class="n">out_img</span><span class="p">[</span><span class="n">nonzeroy</span><span class="p">[</span><span class="n">left_lane_inds</span><span class="p">],</span> <span class="n">nonzerox</span><span class="p">[</span><span class="n">left_lane_inds</span><span class="p">]]</span> <span class="o">=</span> <span class="p">[</span><span class="mi">255</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span>
-    <span class="n">out_img</span><span class="p">[</span><span class="n">nonzeroy</span><span class="p">[</span><span class="n">right_lane_inds</span><span class="p">],</span> <span class="n">nonzerox</span><span class="p">[</span><span class="n">right_lane_inds</span><span class="p">]]</span> <span class="o">=</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">255</span><span class="p">]</span>
+<span class="c1">#     out_img[nonzeroy[left_lane_inds], nonzerox[left_lane_inds]] = [255, 0, 0]</span>
+<span class="c1">#     out_img[nonzeroy[right_lane_inds], nonzerox[right_lane_inds]] = [0, 0, 255]</span>
 
     <span class="c1"># Generate a polygon to illustrate the search window area</span>
     <span class="c1"># And recast the x and y points into usable format for cv2.fillPoly()</span>
@@ -12145,16 +12145,16 @@ div#notebook {
     <span class="n">window_line_pts</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">hstack</span><span class="p">((</span><span class="n">window_left_line</span><span class="p">,</span> <span class="n">window_right_line</span><span class="p">))</span>
 
     <span class="c1"># Draw the lane onto the warped blank image</span>
-    <span class="c1"># cv2.fillPoly(window_img, np.int_([left_line_pts]), (0, 255, 0))</span>
-    <span class="c1"># cv2.fillPoly(window_img, np.int_([right_line_pts]), (0, 255, 0))</span>
+    <span class="n">cv2</span><span class="o">.</span><span class="n">fillPoly</span><span class="p">(</span><span class="n">window_img</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">int_</span><span class="p">([</span><span class="n">left_line_pts</span><span class="p">]),</span> <span class="p">(</span><span class="mi">255</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">))</span>
+    <span class="n">cv2</span><span class="o">.</span><span class="n">fillPoly</span><span class="p">(</span><span class="n">window_img</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">int_</span><span class="p">([</span><span class="n">right_line_pts</span><span class="p">]),</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">255</span><span class="p">))</span>
     <span class="n">cv2</span><span class="o">.</span><span class="n">fillPoly</span><span class="p">(</span><span class="n">window_img</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">int_</span><span class="p">([</span><span class="n">window_line_pts</span><span class="p">]),</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">255</span><span class="p">,</span> <span class="mi">0</span><span class="p">))</span>
 
-    <span class="n">result</span> <span class="o">=</span> <span class="n">cv2</span><span class="o">.</span><span class="n">addWeighted</span><span class="p">(</span><span class="n">out_img</span><span class="p">,</span> <span class="mf">0.8</span><span class="p">,</span> <span class="n">window_img</span><span class="p">,</span> <span class="mf">0.2</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+    <span class="n">result</span> <span class="o">=</span> <span class="n">cv2</span><span class="o">.</span><span class="n">addWeighted</span><span class="p">(</span><span class="n">out_img</span><span class="p">,</span> <span class="mf">0.8</span><span class="p">,</span> <span class="n">window_img</span><span class="p">,</span> <span class="mf">0.4</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
 
     <span class="c1"># Minv = cv2.getPerspectiveTransform(dst, src)</span>
     <span class="n">window_inv</span> <span class="o">=</span> <span class="n">cv2</span><span class="o">.</span><span class="n">warpPerspective</span><span class="p">(</span><span class="n">result</span><span class="p">,</span> <span class="n">M_inv</span><span class="p">,</span> <span class="p">(</span><span class="n">img</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">img</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]),</span> <span class="n">flags</span><span class="o">=</span><span class="n">cv2</span><span class="o">.</span><span class="n">INTER_LINEAR</span><span class="p">)</span>
 
-    <span class="n">output</span> <span class="o">=</span> <span class="n">cv2</span><span class="o">.</span><span class="n">addWeighted</span><span class="p">(</span><span class="n">window_inv</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="n">image</span><span class="p">,</span> <span class="mf">0.6</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+    <span class="n">output</span> <span class="o">=</span> <span class="n">cv2</span><span class="o">.</span><span class="n">addWeighted</span><span class="p">(</span><span class="n">window_inv</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="n">image</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
 
     <span class="c1"># plt.figure(figsize=(15, 15))</span>
     <span class="c1"># plt.imshow(output)</span>
@@ -12338,7 +12338,7 @@ div#notebook {
 
 
 <div class="output_subarea output_stream output_stderr output_text">
-<pre>100%|█████████████████████████████████████▉| 1260/1261 [03:49&lt;00:00,  5.50it/s]
+<pre>100%|█████████████████████████████████████▉| 1260/1261 [26:53&lt;00:01,  1.28s/it]
 </pre>
 </div>
 </div>
@@ -12352,7 +12352,7 @@ div#notebook {
 <pre>[MoviePy] Done.
 [MoviePy] &gt;&gt;&gt;&gt; Video ready: ./output_images/test.mp4 
 
-Wall time: 3min 50s
+Wall time: 26min 55s
 </pre>
 </div>
 </div>
